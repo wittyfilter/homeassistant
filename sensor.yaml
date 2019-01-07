@@ -1,0 +1,46 @@
+# Weather prediction
+- platform: yr
+  forecast: 24
+  monitored_conditions:
+    - symbol
+    - temperature
+    - dewpointTemperature
+- platform: time_date
+  display_options:
+    - 'time'
+- platform: template
+  sensors:
+    xiaomi_ap_aqi_raw:
+      friendly_name: AQI Raw
+      value_template: "{{ states.fan.xiaomi_miio_device.attributes.aqi }}"
+      unit_of_measurement: AQI
+- platform: filter
+  name: "Filtered pm25"
+  friendly_name: AQI
+  entity_id: sensor.xiaomi_ap_aqi_raw
+  filters:
+    - filter: lowpass
+      time_constant: 10
+    - filter: time_simple_moving_average
+      window_size: 00:05
+      precision: 2
+- platform: template
+  sensors:
+    xiaomi_ap_temp:
+      friendly_name: "温度"
+      value_template: "{{ states.fan.xiaomi_miio_device.attributes.temperature }}"
+      unit_of_measurement: °C
+      device_class: temperature        
+- platform: template
+  sensors:
+    xiaomi_ap_humidity:
+      friendly_name: "湿度"
+      value_template: "{{ states.fan.xiaomi_miio_device.attributes.humidity }}"
+      unit_of_measurement: "%"
+      device_class: humidity
+- platform: template
+  sensors:
+    sleeping_probability:
+      friendly_name: "睡觉概率"
+      value_template: "{{ states.binary_sensor.sleeping.attributes.probability | float * 100 }}"
+      unit_of_measurement: "%"

@@ -1,0 +1,55 @@
+- platform: command_line
+  switches:
+    lightwall:
+      friendly_name: "灯带"
+      command_on: !secret lightwall_on
+      command_off: !secret lightwall_off
+
+- platform: broadlink
+  host: !secret broadlink_rmpro_ip
+  mac: !secret broadlink_rmpro_mac
+  timeout: 15
+  switches:
+    tv_samsung:
+      friendly_name: "电视开关"
+      command_on: !secret tv_on
+      command_off: !secret tv_on
+    tv_samsung_source:
+      friendly_name: "电视输入源"
+      command_on: !secret tv_source
+      command_off: !secret tv_source
+    tv_samsung_volup:
+      friendly_name: "电视音量调大"
+      command_on: !secret tv_volup
+      command_off: !secret tv_volup
+    tv_samsung_voldown:
+      friendly_name: "电视音量调小"
+      command_on: !secret tv_voldown
+      command_off: !secret tv_voldown
+    
+    study_light:
+      friendly_name: "书房灯"
+      command_on: !secret study_light_on
+      command_off: !secret study_light_off
+    
+    balcony_light:
+      friendly_name: "阳台灯"
+      command_on: !secret balcony_light
+      command_off: !secret balcony_light
+    rack_up:
+      friendly_name: "晾衣架上升"
+      command_on: !secret rack_up
+      command_off: !secret rack_stop
+    rack_down:
+      friendly_name: "晾衣架下降"
+      command_on: !secret rack_down
+      command_off: !secret rack_stop
+    
+    table_up:
+      friendly_name: "桌子上升"
+      command_on: !secret table_up
+      command_off: !secret table_stop
+    table_down:
+      friendly_name: "桌子下降"
+      command_on: !secret table_down
+      command_off: !secret table_stop

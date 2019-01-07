@@ -1,0 +1,85 @@
+- platform: ffmpeg_motion
+  input: !secret ffmpeg_input
+  changes: 2
+  extra_arguments: -filter:v "crop=in_w/2:in_h:in_w/2:0"
+- platform: template
+  sensors:
+    prone_to_wake:
+      value_template: '{{ states.sensor.time.state > "09:00" and states.sensor.time.state <= "21:59"}}'
+- platform: template
+  sensors:
+    k_no_motion_for_20:
+      value_template: '{{states.binary_sensor.motion_sensor_kitchen.attributes["No motion since"] | int >= 1200}}'
+- platform: template
+  sensors:
+    b_no_motion_for_20:
+      value_template: '{{states.binary_sensor.motion_sensor_balcony.attributes["No motion since"] | int >= 1200}}'
+- platform: template
+  sensors:
+    t_no_motion_for_20:
+      value_template: '{{states.binary_sensor.motion_sensor_toilet.attributes["No motion since"] | int >= 1200}}'
+- platform: bayesian
+  prior: 0.33
+  name: 'Sleeping'
+  probability_threshold: 0.85
+  observations:
+    - entity_id: 'variable.last_motion'
+      prob_given_true: 0.1
+      prob_given_false: 0.8
+      platform: 'state'
+      to_state: 'FFmpeg Motion'
+    - entity_id: 'variable.last_motion'
+      prob_given_true: 0.6
+      prob_given_false: 0.2
+      platform: 'state'
+      to_state: 'Toilet Motion'
+    - entity_id: 'variable.last_motion'
+      prob_given_true: 0.45
+      prob_given_false: 0.3
+      platform: 'state'
+      to_state: 'Kitchen Motion'
+    - entity_id: 'group.all_light'
+      prob_given_true: 1.0
+      prob_given_false: 0.8
+      platform: 'state'
+      to_state: 'off'
+    - entity_id: 'device_tracker.zoey'
+      prob_given_true: 1
+      prob_given_false: 0.625
+      platform: 'state'
+      to_state: 'not_home'
+    - entity_id: 'device_tracker.simon'
+      prob_given_true: 0.8
+      prob_given_false: 0.625
+      platform: 'state'
+      to_state: 'not_home'
+    - entity_id: 'sensor.illumination_7c49eb17e992'
+      prob_given_true: 0.8
+      prob_given_false: 0.4
+      platform: 'numeric_state'
+      below: 100
+    - entity_id: 'binary_sensor.prone_to_wake'
+      prob_given_true: 0.3
+      prob_given_false: 0.7
+      platform: 'state'
+      to_state: 'on'
+    - entity_id: 'switch.plug_158d000237cd54'
+      prob_given_true: 0.7
+      prob_given_false: 0.5
+      platform: 'state'
+      to_state: 'on'
+    - entity_id: 'binary_sensor.k_no_motion_for_20'
+      prob_given_true: 1
+      prob_given_false: 0.825
+      platform: 'state'
+      to_state: 'on'
+    - entity_id: 'binary_sensor.b_no_motion_for_20'
+      prob_given_true: 1
+      prob_given_false: 0.825
+      platform: 'state'
+      to_state: 'on'
+    - entity_id: 'binary_sensor.t_no_motion_for_20'
+      prob_given_true: 1
+      prob_given_false: 0.825
+      platform: 'state'
+      to_state: 'on'

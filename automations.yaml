@@ -1,0 +1,221 @@
+- id: id1
+  alias: Back home
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.door_window_sensor_158d00023137b7
+    from: 'off'   
+    to: 'on'
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.illumination_7c49eb17e992
+    below: 250
+  - condition: state
+    entity_id: binary_sensor.motion_sensor_kitchen
+    state: 'off'
+  action:
+  - entity_id: switch.kitchen_left
+    service: switch.turn_on
+  - entity_id: light._5
+    service: light.turn_on
+  - service: shell_command.recog_people
+- id: id2
+  alias: Good night
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.sleeping
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: fan.xiaomi_miio_device
+    state: 'on'
+  action:
+    service: fan.set_speed
+    data:
+      entity_id: fan.xiaomi_miio_device
+      speed: Silent
+- id: id3
+  alias: Startup
+  trigger:
+  - event: start
+    platform: homeassistant
+  condition: []
+  action:
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.vlc
+      volume_level: 0.99
+  - service: cover.close_cover
+    entity_id: cover.garage_door
+  - service: switch.turn_off
+    entity_id: switch.table_down
+- id: id4
+  alias: Turn on air purifier
+  trigger:
+  - platform: numeric_state
+    above: '73'
+    entity_id: sensor.filtered_pm25
+  condition:
+  - condition: state
+    entity_id: binary_sensor.sleeping
+    state: 'off'
+  - condition: state
+    entity_id: fan.xiaomi_miio_device
+    state: 'off'
+  action:
+  - service: fan.turn_on
+    entity_id: fan.xiaomi_miio_device
+  - service: fan.set_speed
+    data:
+      entity_id: fan.xiaomi_miio_device
+      speed: Favorite
+- id: id5
+  alias: Turn air purifier strong
+  trigger:
+  - platform: numeric_state
+    above: '73'
+    entity_id: sensor.filtered_pm25
+  condition:
+  - condition: state
+    entity_id: fan.xiaomi_miio_device
+    state: 'on'
+  - condition: template
+    value_template: '{{states.fan.xiaomi_miio_device.attributes["speed"] == "Silent"}}'
+  - condition: state
+    entity_id: binary_sensor.sleeping
+    state: 'off'
+  action:
+    service: fan.set_speed
+    data:
+      entity_id: fan.xiaomi_miio_device
+      speed: Favorite
+- id: id6
+  alias: Turn off air purifier
+  trigger:
+  - platform: numeric_state
+    below: '68'
+    entity_id: sensor.filtered_pm25
+  condition:
+  - condition: state
+    entity_id: binary_sensor.sleeping
+    state: 'off'
+  - condition: state
+    entity_id: fan.xiaomi_miio_device
+    state: 'on'
+  action:
+    service: fan.turn_off
+    entity_id: fan.xiaomi_miio_device
+- id: id7
+  alias: Toggle balcony light
+  trigger:
+  - platform: event
+    event_type: xiaomi_aqara.click
+    event_data:
+      click_type: single
+      entity_id: binary_sensor.switch_balcony
+  condition: []
+  action:
+    service: switch.toggle
+    entity_id: switch.balcony_light
+- id: id8
+  alias: Turn on balcony light
+  trigger:
+  - entity_id: binary_sensor.motion_sensor_balcony
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: switch.balcony_light
+    state: 'off'
+  - condition: state
+    entity_id: sun.sun
+    state: 'below_horizon'
+  action:
+  - entity_id: switch.balcony_light
+    service: switch.turn_on
+- id: id9
+  alias: Turn on toilet light
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.motion_sensor_toilet
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+    service: switch.turn_on
+    entity_id: switch.toilet_left
+- id: id10
+  alias: Turn off table up
+  trigger:
+  - platform: state
+    entity_id: switch.table_up
+    for: 00:03:00
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+    service: switch.turn_off
+    entity_id: switch.table_up
+- id: id11
+  alias: Turn off table down
+  trigger:
+  - platform: state
+    entity_id: switch.table_down
+    for: 00:03:00
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+    service: switch.turn_off
+    entity_id: switch.table_down
+- id: id12
+  alias: Update lumen sensor
+  trigger:
+  - platform: time
+    minutes: /3
+    seconds: 0
+  action:
+  - data:
+      brightness: 2
+      entity_id: light.gateway_light
+    service: light.turn_on
+  - delay:
+      seconds: 1
+  - entity_id: light.gateway_light
+    service: light.turn_off
+- id: id13
+  alias: Turn off charging power
+  trigger:
+  - entity_id: binary_sensor.door_window_sensor_158d00023137b7
+    for: 
+      minutes: 10
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: switch.plug_158d000237cd54
+    state: 'on'
+  - condition: state
+    entity_id: device_tracker.zoey
+    state: not_home
+  action:
+  - entity_id: switch.plug_158d000237cd54
+    service: switch.turn_off
+- id: id14
+  alias: Update Last Motion
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.motion_sensor_toilet, binary_sensor.motion_sensor_balcony,
+      binary_sensor.motion_sensor_kitchen, binary_sensor.ffmpeg_motion
+    to: 'on'
+  action:
+  - service: variable.set_variable
+    data:
+      variable: last_motion
+      attributes_template: "{\n  \"history_1\": \"{{ variable.state }}\",\n  \"history_2\"\
+        : \"{{ variable.attributes.history_1 }}\",\n  \"history_3\": \"{{ variable.attributes.history_2\
+        \ }}\"\n}\n"
+    data_template:
+      value: '{{ trigger.to_state.attributes.friendly_name }}'

@@ -1,0 +1,26 @@
+light.gateway_light:
+  friendly_name: 客厅夜灯
+binary_sensor.switch_158d000251a3e9:
+  friendly_name: 阳台开关
+switch.plug_158d000237cd54:
+  friendly_name: 主卧插座
+light._2:
+  hidden: true 
+light._4:
+  hidden: true  
+light._3:
+  hidden: true  
+light.yeelight_color2_7c49eb1c5c7a:
+  hidden: true  
+sensor.xiaomi_ap_aqi_raw:
+  hidden: true  
+binary_sensor.k_no_motion_for_20:
+  hidden: true
+binary_sensor.b_no_motion_for_20:
+  hidden: true  
+binary_sensor.t_no_motion_for_20:
+  hidden: true  
+binary_sensor.prone_to_wake:
+  hidden: true
+sensor.time:
+  hidden: true

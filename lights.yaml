@@ -1,0 +1,4 @@
+  - platform: yeelight
+    devices:
+      192.168.2.11:
+        name: "客厅灯"

@@ -1,0 +1,172 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: RIVERSIDE
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret latitude
+  longitude: !secret longitude
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 0
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Asia/Shanghai
+  # Customization file
+  customize: !include customize.yaml
+  packages: !include_dir_named packages
+
+# Show links to resources in log and frontend
+# introduction:
+
+# Enables the frontend
+frontend:
+
+# Enables configuration UI
+config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+http:
+#   base_url: example.duckdns.org:8123
+  api_password: !secret http_password
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# logger:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+recorder:
+  db_url: !secret SQL_address
+
+# Sensors
+sensor: !include sensor.yaml
+binary_sensor: !include binary_sensor.yaml
+
+switch: !include switch.yaml
+
+# Text to speech
+tts:
+  - platform: baidu
+    app_id: !secret baidu_tts_appid
+    api_key: !secret baidu_tts_apikey
+    secret_key: !secret baidu_tts_secretkey
+
+# Cloud
+# cloud:
+
+# ffmpeg:
+#   ffmpeg_bin: '/usr/local/bin/ffmpeg'
+
+# camera:
+#   - platform: ffmpeg
+#     name: ezviz
+#     input: !secret ffmpeg_input
+#     extra_arguments: -rtsp_transport tcp -q:v 32 -an
+#   - platform: ezviz
+#     name: "ezviz"
+#     id: !secret ezviz_id
+#     key: !secret ezviz_key
+#     sec: !secret ezviz_sec
+  
+#  - platform: ffmpeg
+#    name: webcam
+#    input: -f v4l2 -r 30 -i /dev/video0
+
+# mqtt:
+#   broker: !secret mqtt_ip
+
+xiaomi_aqara:
+  gateways:
+    - mac: !secret xiaomi_mac
+      key: !secret xiaomi_key
+
+light: !include lights.yaml
+
+fan:
+  - platform: xiaomi_miio
+    friendly_name: "小米空净"
+    model: zhimi.airpurifier.v6
+    host: !secret xiaomi_ap_ip
+    token: !secret xiaomi_ap_token
+
+cover:
+  - platform: template
+    covers:
+      garage_door:
+        friendly_name: "升降桌"
+        open_cover:
+          service: switch.turn_on
+          data:
+            entity_id: switch.table_up
+        close_cover:
+          service: switch.turn_on
+          data:
+            entity_id: switch.table_down
+        stop_cover:
+          service: switch.turn_off
+          data:
+            entity_id: switch.table_up
+
+# ifttt:
+#   key: !secret ifttt_key
+
+variable:  
+  last_motion:
+    value: 'Unknown'
+    restore: true
+    attributes:
+      icon: mdi:alarm
+      friendly_name: 'Last Motion'
+
+homekit:
+  filter:
+    exclude_domains: 
+      - automation
+    exclude_entities:
+      - light._2
+      - light._3
+      - light._4
+      - binary_sensor.k_no_motion_for_20
+      - binary_sensor.t_no_motion_for_20
+      - binary_sensor.b_no_motion_for_20
+      - binary_sensor.prone_to_wake
+
+asuswrt:
+  host: !secret asus_ip
+  username: !secret asus_username
+  ssh_key: !secret asus_ssh_key
+
+media_player:
+  - platform: vlc
+
+shell_command:
+  recog_people: python3 /home/pi/.homeassistant/recog_people.py
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+
+molohub:
+
