@@ -5,7 +5,7 @@ import base64
 import yaml
 import homeassistant.remote as remote
 
-with open("secrets.yaml", 'r') as secrets:
+with open("/home/pi/.homeassistant/secrets.yaml", 'r') as secrets:
   secret = yaml.load(secrets)
   apikey_baidu = secret['baidu_body_apikey']
   secretkey_baidu = secret['baidu_body_secretkey']
