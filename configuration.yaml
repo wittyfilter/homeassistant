@@ -145,13 +145,15 @@ homekit:
     exclude_domains: 
       - automation
     exclude_entities:
-      - light._2
-      - light._3
-      - light._4
       - binary_sensor.k_no_motion_for_20
       - binary_sensor.t_no_motion_for_20
       - binary_sensor.b_no_motion_for_20
       - binary_sensor.prone_to_wake
+      - binary_sensor.sleeping
+      - binary_sensor.motion_sensor_balcony
+      - binary_sensor.motion_sensor_kitchen
+      - binary_sensor.motion_sensor_toilet
+      - binary_sensor.ffmpeg_motion
 
 asuswrt:
   host: !secret asus_ip
@@ -162,7 +164,7 @@ media_player:
   - platform: vlc
 
 shell_command:
-  recog_people: python3 /home/pi/.homeassistant/recog_people.py
+  recog_people: python3 /home/pi/.homeassistant/recog_people.py &
 
 group: !include groups.yaml
 automation: !include automations.yaml

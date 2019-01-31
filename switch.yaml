@@ -1,3 +1,13 @@
+- platform: broadlink_mp1
+  host: !secret honyar_ip
+  mac: !secret honyar_mac
+  friendly_name: "主卧排插"
+  alias:
+    s1: "Computer"
+    s2: "Charger"
+    s3: "Extended"
+    s4: "Heater"
+
 - platform: command_line
   switches:
     lightwall:

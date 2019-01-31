@@ -3,21 +3,22 @@
   trigger:
   - platform: state
     entity_id: binary_sensor.door_window_sensor_158d00023137b7
-    from: 'off'   
+    from: 'off'
     to: 'on'
-  condition:
-  - condition: numeric_state
-    entity_id: sensor.illumination_7c49eb17e992
-    below: 250
-  - condition: state
-    entity_id: binary_sensor.motion_sensor_kitchen
-    state: 'off'
   action:
+  - service: shell_command.recog_people
+  - condition: and
+    conditions: 
+      - condition: numeric_state
+        entity_id: sensor.illumination_7c49eb17e992
+        below: 100
+      - condition: state
+        entity_id: binary_sensor.motion_sensor_kitchen
+        state: 'off'
   - entity_id: switch.kitchen_left
     service: switch.turn_on
-  - entity_id: light._5
+  - entity_id: light.ke_ting_deng
     service: light.turn_on
-  - service: shell_command.recog_people
 - id: id2
   alias: Good night
   trigger:
@@ -25,15 +26,13 @@
     entity_id: binary_sensor.sleeping
     from: 'off'
     to: 'on'
-  condition:
-  - condition: state
-    entity_id: fan.xiaomi_miio_device
-    state: 'on'
   action:
-    service: fan.set_speed
+  - service: fan.set_speed
     data:
       entity_id: fan.xiaomi_miio_device
       speed: Silent
+  - service: switch.turn_off
+    entity_id: switch.plug_158d000237cd54
 - id: id3
   alias: Startup
   trigger:
@@ -68,27 +67,7 @@
   - service: fan.set_speed
     data:
       entity_id: fan.xiaomi_miio_device
-      speed: Favorite
-- id: id5
-  alias: Turn air purifier strong
-  trigger:
-  - platform: numeric_state
-    above: '73'
-    entity_id: sensor.filtered_pm25
-  condition:
-  - condition: state
-    entity_id: fan.xiaomi_miio_device
-    state: 'on'
-  - condition: template
-    value_template: '{{states.fan.xiaomi_miio_device.attributes["speed"] == "Silent"}}'
-  - condition: state
-    entity_id: binary_sensor.sleeping
-    state: 'off'
-  action:
-    service: fan.set_speed
-    data:
-      entity_id: fan.xiaomi_miio_device
-      speed: Favorite
+      speed: Silent
 - id: id6
   alias: Turn off air purifier
   trigger:
@@ -130,7 +109,7 @@
     state: 'off'
   - condition: state
     entity_id: sun.sun
-    state: 'below_horizon'
+    state: below_horizon
   action:
   - entity_id: switch.balcony_light
     service: switch.turn_on
@@ -172,7 +151,7 @@
 - id: id12
   alias: Update lumen sensor
   trigger:
-  - platform: time
+  - platform: time_pattern
     minutes: /3
     seconds: 0
   action:
@@ -185,24 +164,27 @@
   - entity_id: light.gateway_light
     service: light.turn_off
 - id: id13
-  alias: Turn off charging power
+  alias: Morning
   trigger:
-  - entity_id: binary_sensor.door_window_sensor_158d00023137b7
-    for: 
-      minutes: 10
-    from: 'on'
-    platform: state
-    to: 'off'
-  condition:
-  - condition: state
-    entity_id: switch.plug_158d000237cd54
-    state: 'on'
-  - condition: state
-    entity_id: device_tracker.zoey
-    state: not_home
+  - at: '07:00'
+    platform: time
   action:
-  - entity_id: switch.plug_158d000237cd54
+  - entity_id: switch.heater
+    service: switch.turn_on
+  - delay: 
+      minutes: 10
+  - entity_id: switch.heater
     service: switch.turn_off
+  - delay: 
+      minutes: 30
+  - entity_id: switch.heater
+    service: switch.turn_on
+  - delay: 
+      minutes: 20
+  - entity_id: switch.heater
+    service: switch.turn_off
+  - entity_id: switch.plug_158d000237cd54
+    service: switch.turn_on
 - id: id14
   alias: Update Last Motion
   trigger:
@@ -219,21 +201,3 @@
         \ }}\"\n}\n"
     data_template:
       value: '{{ trigger.to_state.attributes.friendly_name }}'
-- id: id15
-  alias: Back home plus
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.door_window_sensor_158d00023137b7
-    from: 'off'   
-    to: 'on'
-  condition:
-    condition: or
-    conditions:
-      - condition: state
-        entity_id: device_tracker.zoey
-        state: not_home
-      - condition: state
-        entity_id: device_tracker.simon
-        state: not_home
-  action:
-  - service: shell_command.recog_people

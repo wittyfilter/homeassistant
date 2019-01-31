@@ -5,7 +5,7 @@
 - platform: template
   sensors:
     prone_to_wake:
-      value_template: '{{ states.sensor.time.state > "09:00" and states.sensor.time.state <= "21:59"}}'
+      value_template: '{{ states.sensor.time.state > "08:00" and states.sensor.time.state <= "21:59"}}'
 - platform: template
   sensors:
     k_no_motion_for_20:
@@ -21,7 +21,7 @@
 - platform: bayesian
   prior: 0.33
   name: 'Sleeping'
-  probability_threshold: 0.85
+  probability_threshold: 0.8
   observations:
     - entity_id: 'variable.last_motion'
       prob_given_true: 0.1
@@ -55,19 +55,19 @@
       to_state: 'not_home'
     - entity_id: 'sensor.illumination_7c49eb17e992'
       prob_given_true: 0.8
-      prob_given_false: 0.4
+      prob_given_false: 0.3
       platform: 'numeric_state'
-      below: 100
+      below: 50
     - entity_id: 'binary_sensor.prone_to_wake'
       prob_given_true: 0.3
       prob_given_false: 0.7
       platform: 'state'
       to_state: 'on'
-    - entity_id: 'switch.plug_158d000237cd54'
-      prob_given_true: 0.7
-      prob_given_false: 0.5
-      platform: 'state'
-      to_state: 'on'
+    # - entity_id: 'switch.plug_158d000237cd54'
+    #   prob_given_true: 0.7
+    #   prob_given_false: 0.5
+    #   platform: 'state'
+    #   to_state: 'on'
     - entity_id: 'binary_sensor.k_no_motion_for_20'
       prob_given_true: 1
       prob_given_false: 0.825
