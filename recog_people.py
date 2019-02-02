@@ -3,23 +3,27 @@ from subprocess import call
 import requests
 import base64
 import yaml
-import homeassistant.remote as remote
+import json
 
 with open("/home/pi/.homeassistant/secrets.yaml", 'r') as secrets:
   secret = yaml.load(secrets)
   apikey_baidu = secret['baidu_body_apikey']
   secretkey_baidu = secret['baidu_body_secretkey']
-  ha_api = secret['http_password']
+  ha_token = secret['token']
   ffmpeg_input = secret['ffmpeg_input']
 
+auth = 'Bearer ' + ha_token
+url = 'http://localhost:8123/api/services/tts/baidu_say'
 timeout = 10
-api = remote.API('127.0.0.1', ha_api)
-domain = 'tts'
+headers = {
+  'Authorization': auth,
+  'content-type': 'application/json',
+}
 entity_id = 'media_player.vlc'
-message1 = "欢迎你们"
-message2 = "欢迎淡淡"
-message3 = "欢迎哲哥"
-message4 = "欢迎回家"
+message1 = '欢迎你们'
+message2 = '欢迎淡淡'
+message3 = '欢迎哲哥'
+message4 = '欢迎回家'
 
 host_baidu_token = 'https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials'
 token_baidu = requests.post(host_baidu_token, data={'client_id':apikey_baidu, 'client_secret':secretkey_baidu}).json()
@@ -48,10 +52,10 @@ while result['person_num'] == 0:
   	quit()
 
 if result['person_num'] > 1:
-  remote.call_service(api, domain, 'baidu_say', {'entity_id': entity_id, 'message': message1})
+  r = requests.post(url, data=json.dumps({'entity_id': entity_id, 'message': message1}), headers=headers)
 elif result['person_info'][0]['attributes']['gender']['score'] < 0.75:
-  remote.call_service(api, domain, 'baidu_say', {'entity_id': entity_id, 'message': message4})
+  r = requests.post(url, data=json.dumps({'entity_id': entity_id, 'message': message4}), headers=headers)
 elif result['person_info'][0]['attributes']['gender']['name'] == "女性":
-  remote.call_service(api, domain, 'baidu_say', {'entity_id': entity_id, 'message': message2})
+  r = requests.post(url, data=json.dumps({'entity_id': entity_id, 'message': message2}), headers=headers)
 else:
-  remote.call_service(api, domain, 'baidu_say', {'entity_id': entity_id, 'message': message3})
+  r = requests.post(url, data=json.dumps({'entity_id': entity_id, 'message': message3}), headers=headers)
