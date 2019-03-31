@@ -50,7 +50,7 @@ while result['person_num'] == 0:
   timeout = timeout-1
   if timeout == 0:
   	quit()
-
+print(result['person_info'])
 if result['person_num'] > 1:
   r = requests.post(url, data=json.dumps({'entity_id': entity_id, 'message': message1}), headers=headers)
 elif result['person_info'][0]['attributes']['gender']['score'] < 0.75:

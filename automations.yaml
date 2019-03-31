@@ -7,14 +7,21 @@
     to: 'on'
   action:
   - service: shell_command.recog_people
-  - condition: and
-    conditions: 
-      - condition: numeric_state
-        entity_id: sensor.illumination_7c49eb17e992
-        below: 100
-      - condition: state
-        entity_id: binary_sensor.motion_sensor_kitchen
-        state: 'off'
+- id: id5
+  alias: Back home 2
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.door_window_sensor_158d00023137b7
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.illumination_7c49eb17e992
+    below: 100
+  - condition: state
+    entity_id: binary_sensor.motion_sensor_kitchen
+    state: 'off'
+  action:
   - entity_id: switch.kitchen_left
     service: switch.turn_on
   - entity_id: light.ke_ting_deng
@@ -22,17 +29,18 @@
 - id: id2
   alias: Good night
   trigger:
-  - platform: state
-    entity_id: binary_sensor.sleeping
-    from: 'off'
-    to: 'on'
+  - at: '22:30'
+    platform: time
   action:
+  - service: switch.turn_off
+    entity_id: switch.plug_158d000237cd54
+  - condition: state
+    entity_id: fan.xiaomi_miio_device
+    state: 'on'
   - service: fan.set_speed
     data:
       entity_id: fan.xiaomi_miio_device
       speed: Silent
-  - service: switch.turn_off
-    entity_id: switch.plug_158d000237cd54
 - id: id3
   alias: Startup
   trigger:
@@ -51,39 +59,29 @@
 - id: id4
   alias: Turn on air purifier
   trigger:
-  - platform: numeric_state
-    above: '73'
+  - above: '73'
     entity_id: sensor.filtered_pm25
+    platform: numeric_state
   condition:
-  - condition: state
-    entity_id: binary_sensor.sleeping
-    state: 'off'
   - condition: state
     entity_id: fan.xiaomi_miio_device
     state: 'off'
   action:
-  - service: fan.turn_on
-    entity_id: fan.xiaomi_miio_device
-  - service: fan.set_speed
-    data:
-      entity_id: fan.xiaomi_miio_device
-      speed: Silent
+  - entity_id: fan.xiaomi_miio_device
+    service: fan.turn_on
 - id: id6
   alias: Turn off air purifier
   trigger:
-  - platform: numeric_state
-    below: '68'
+  - below: '68'
     entity_id: sensor.filtered_pm25
+    platform: numeric_state
   condition:
-  - condition: state
-    entity_id: binary_sensor.sleeping
-    state: 'off'
   - condition: state
     entity_id: fan.xiaomi_miio_device
     state: 'on'
   action:
+  - entity_id: fan.xiaomi_miio_device
     service: fan.turn_off
-    entity_id: fan.xiaomi_miio_device
 - id: id7
   alias: Toggle balcony light
   trigger:
@@ -122,8 +120,31 @@
     to: 'on'
   condition: []
   action:
-    service: switch.turn_on
+  - service: switch.turn_on
     entity_id: switch.toilet_left
+  - delay:
+      seconds: 5
+  - condition: state
+    entity_id: switch.toilet_left
+    state: 'on'
+  - service: switch.turn_on
+    entity_id: switch.plug_158d000237cd54
+- id: id15
+  alias: Turn off toilet
+  trigger:
+  - platform: state
+    entity_id: switch.toilet_left
+    from: 'on'
+    to: 'off'
+  condition: []
+  action:
+  - delay:
+      seconds: 10
+  - condition: state
+    entity_id: switch.toilet_left
+    state: 'off'
+  - service: switch.turn_off
+    entity_id: switch.plug_158d000237cd54
 - id: id10
   alias: Turn off table up
   trigger:
@@ -166,25 +187,15 @@
 - id: id13
   alias: Morning
   trigger:
-  - at: '07:00'
+  - at: 07:40
     platform: time
   action:
   - entity_id: switch.heater
     service: switch.turn_on
-  - delay: 
-      minutes: 10
-  - entity_id: switch.heater
-    service: switch.turn_off
-  - delay: 
-      minutes: 30
-  - entity_id: switch.heater
-    service: switch.turn_on
-  - delay: 
+  - delay:
       minutes: 20
   - entity_id: switch.heater
     service: switch.turn_off
-  - entity_id: switch.plug_158d000237cd54
-    service: switch.turn_on
 - id: id14
   alias: Update Last Motion
   trigger:

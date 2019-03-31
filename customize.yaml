@@ -3,11 +3,11 @@ light.gateway_light:
 binary_sensor.switch_158d000251a3e9:
   friendly_name: 阳台开关
 switch.plug_158d000237cd54:
-  friendly_name: 客厅插座 
+  friendly_name: 次卫马桶 
 light.yeelight_color2_7c49eb1c5c7a:
   hidden: true  
 sensor.xiaomi_ap_aqi_raw:
-  hidden: true  
+  hidden: false  
 binary_sensor.k_no_motion_for_20:
   hidden: true
 binary_sensor.b_no_motion_for_20:

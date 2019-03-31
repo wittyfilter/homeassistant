@@ -49,7 +49,7 @@ history:
 # View all events in a logbook
 logbook:
 
-# logger:
+system_health:
 
 # Enables a map showing the location of tracked devices
 map:
@@ -106,7 +106,6 @@ light: !include lights.yaml
 
 fan:
   - platform: xiaomi_miio
-    friendly_name: "小米空净"
     model: zhimi.airpurifier.v6
     host: !secret xiaomi_ap_ip
     token: !secret xiaomi_ap_token
@@ -164,7 +163,7 @@ media_player:
   - platform: vlc
 
 shell_command:
-  recog_people: python3 /home/pi/.homeassistant/recog_people.py &
+  recog_people: python3 /home/pi/.homeassistant/recog_people.py
 
 group: !include groups.yaml
 automation: !include automations.yaml

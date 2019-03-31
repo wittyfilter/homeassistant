@@ -16,7 +16,6 @@
       unit_of_measurement: AQI
 - platform: filter
   name: "Filtered pm25"
-  friendly_name: AQI
   entity_id: sensor.xiaomi_ap_aqi_raw
   filters:
     - filter: lowpass
